@@ -25,16 +25,6 @@ function procesarTSV(data) {
   });
 }
 
-function convertirEnlaceDrive(url) {
-  if (url.includes("drive.google.com")) {
-    // Extraer el FILE_ID de la URL
-    const fileIdMatch = url.match(/\/d\/(.*?)\/view/);
-    if (fileIdMatch && fileIdMatch[1]) {
-      return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
-    }
-  }
-  return url; // Si no es de Google Drive, devuelve el enlace original
-}
 
 
 
@@ -71,7 +61,7 @@ function cargarPerfilJugador() {
     document.getElementById("altura").textContent = jugador["Altura en mts"] || "N/A";
     document.getElementById("peso").textContent = jugador["Peso en Kgs"] || "N/A";
     document.getElementById("clase").textContent = jugador["Clase (Año de graduación)"] || "N/A";
-    document.getElementById("promedio").textContent = jugador["Promedio Acádemico"] || "N/A";
+    document.getElementById("promedio").textContent = jugador["Promedio Académico"] || "N/A";
     document.getElementById("club").textContent = jugador["Nombre del equipo actual"] || "N/A";
     document.getElementById("estado").textContent = jugador["Estado"] || "N/A";
     document.getElementById("dash").textContent = jugador["40 YD Dash"] || "N/A";
@@ -100,14 +90,19 @@ function cargarPerfilJugador() {
   
     // Asignar la foto del jugador
     const fotoElemento = document.getElementById("Foto");
-    if (jugador["Foto"] && jugador["Foto"].trim() !== "") {
-      const fotoUrl = convertirEnlaceDrive(jugador["Foto"]); // Convierte el enlace
-      fotoElemento.src = fotoUrl;
-      fotoElemento.alt = `Foto de ${jugador["Nombre"]} ${jugador["Apellido Paterno"]}`;
+    let rutaFoto = jugador["Carpeta"]; // Usar la columna "Carpeta" del TSV
+  
+    if (rutaFoto && rutaFoto.trim() !== "") {
+      fotoElemento.src = rutaFoto; // Intenta cargar la foto
+      fotoElemento.onerror = () => {
+        // Si falla, intenta con otra extensión
+        fotoElemento.src = rutaFoto.replace(".jpg", ".JPG");
+      };
     } else {
-      fotoElemento.src = "default.jpg";
-      fotoElemento.alt = "Foto no disponible";
+      fotoElemento.src = "imagenes/default.jpg"; // Imagen predeterminada si no hay foto
     }
+
+
 
     
 

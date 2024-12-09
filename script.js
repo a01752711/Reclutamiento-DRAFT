@@ -236,8 +236,10 @@ function mostrarResultados(lista) {
 
     // Imagen del jugador
     const img = document.createElement("img");
-    img.src = jugador["Foto"]?.startsWith("http") ? jugador["Foto"] : "placeholder.jpg";
-    img.alt = `${jugador["Nombre"]} ${jugador["Apellido Paterno"]}`;
+    img.src = jugador["Carpeta"] && jugador["Carpeta"].trim() !== "" 
+              ? jugador["Carpeta"] 
+              : "imagenes/default.jpg"; // Ruta predeterminada
+    img.alt = `${jugador["Nombre"]} ${jugador["Apellido Paterno"]} ${jugador["Apellido Materno"]}`;    
     img.className = "jugador-imagen";
     li.appendChild(img);
 
