@@ -326,7 +326,7 @@ function filtrarJugadores() {
       filtroFavoritos === "todos" || // Mostrar todos
       (filtroFavoritos === "favoritos" && favoritos.includes(`${jugador["Nombre"]}_${jugador["Apellido Paterno"]}`));
 
-      const cumpleEnProceso =
+    const cumpleEnProceso =
       filtroEnProceso === "todos" || // Mostrar todos
       (filtroEnProceso === "enProceso" && enProceso.includes(`${jugador["Nombre"]}_${jugador["Apellido Paterno"]}`));
 
