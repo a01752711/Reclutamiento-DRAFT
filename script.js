@@ -55,6 +55,8 @@ let filtroAlturaMax = null;
 let filtroPesoMin = null;
 let filtroPesoMax = null;
 let filtroRating = "";
+let filtroFavoritos = "todos"; // Estado inicial
+let filtroEnProceso = "todos"; // Opciones: "todos", "enProceso"
 let paginaActual = 1; // Página inicial
 const jugadoresPorPagina = 10; // Número de jugadores por página
 const cumpleClase =
@@ -67,11 +69,6 @@ const cumpleAltura =
 const cumplePeso =
   (filtroPesoMin === null || pesoJugador >= filtroPesoMin) &&
   (filtroPesoMax === null || pesoJugador <= filtroPesoMax);
-
-
-
-
-
 
 
 
@@ -125,6 +122,17 @@ function filtrarPorClase() {
   filtrarJugadores(); // Llama a la función principal de filtrado
 }
 
+function filtrarPorFavoritos() {
+  filtroFavoritos = document.getElementById("favoritosFiltro").value;
+  filtrarJugadores();
+}
+
+function filtrarPorEnProceso() {
+  filtroEnProceso = document.getElementById("enProcesoFiltro").value;
+  filtrarJugadores();
+}
+
+
 
 
 function cerrarSesion() {
@@ -142,7 +150,129 @@ function calcularEstrellas(rating) {
   return `<span style="color: #999;">Sin clasificación</span>`;
 }
 
+function toggleFavorito(nombre, apellido) {
+  const equipoActual = localStorage.getItem("usuarioActual");
+  const claveFavoritos = `favoritos_${equipoActual}`;
+  let favoritos = JSON.parse(localStorage.getItem(claveFavoritos)) || [];
+  const idJugador = `${nombre}_${apellido}`;
 
+  const indice = favoritos.indexOf(idJugador);
+  if (indice === -1) {
+      favoritos.push(idJugador);
+  } else {
+      favoritos.splice(indice, 1);
+  }
+  localStorage.setItem(claveFavoritos, JSON.stringify(favoritos));
+  actualizarBotonFavorito(nombre, apellido);
+}
+
+
+function actualizarBotonFavorito(nombre, apellido) {
+  const equipoActual = localStorage.getItem("usuarioActual");
+  const claveFavoritos = `favoritos_${equipoActual}`;
+  const favoritos = JSON.parse(localStorage.getItem(claveFavoritos)) || [];
+  const idJugador = `${nombre}_${apellido}`;
+  const esFavorito = favoritos.includes(idJugador);
+
+  const boton = document.querySelector(`button.favorito-btn[data-nombre="${nombre}"][data-apellido="${apellido}"]`);
+  if (boton) {
+      boton.textContent = esFavorito ? "Quitar de Favoritos" : "Agregar a Favoritos";
+      boton.classList.toggle("activo", esFavorito);
+      boton.style.width = "100px"; // Ajusta el ancho del botón al cargar
+  }
+}
+
+
+
+function actualizarBotonProceso(nombre, apellido) {
+  const equipoActual = localStorage.getItem("usuarioActual");
+  const claveProceso = `proceso_${equipoActual}`;
+  const enProceso = JSON.parse(localStorage.getItem(claveProceso)) || [];
+  const idJugador = `${nombre}_${apellido}`;
+  const esEnProceso = enProceso.includes(idJugador);
+
+  const boton = document.querySelector(`button.proceso-btn[data-nombre="${nombre}"][data-apellido="${apellido}"]`);
+  if (boton) {
+      boton.textContent = esEnProceso ? "Quitar de En proceso" : "Agregar a En proceso";
+      boton.classList.toggle("activo", esEnProceso);
+      boton.style.width = "100px"; // Ajusta el ancho del botón al cargar
+  }
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  filtroFavoritos = "todos";
+  filtroEnProceso = "todos";
+  filtrarJugadores();
+});
+
+
+
+
+
+let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+let enProceso = JSON.parse(localStorage.getItem("enProceso")) || [];
+
+// Función para alternar "En proceso"
+function toggleProceso(nombre, apellido) {
+  const equipoActual = localStorage.getItem("usuarioActual");
+  const claveProceso = `proceso_${equipoActual}`;
+  let enProceso = JSON.parse(localStorage.getItem(claveProceso)) || [];
+  const idJugador = `${nombre}_${apellido}`;
+
+  const indice = enProceso.indexOf(idJugador);
+  if (indice === -1) {
+      enProceso.push(idJugador);
+  } else {
+      enProceso.splice(indice, 1);
+  }
+  localStorage.setItem(claveProceso, JSON.stringify(enProceso));
+  actualizarBotonProceso(nombre, apellido);
+}
+
+
+
+
+
+function ordenarPorRating(jugadores) {
+  return jugadores.sort((a, b) => {
+      const ratingA = parseFloat(a["Rating"]) || 0;
+      const ratingB = parseFloat(b["Rating"]) || 0;
+
+      // Colocar jugadores sin rating al final
+      if (ratingA === 0 && ratingB === 0) return 0;
+      if (ratingA === 0) return 1;
+      if (ratingB === 0) return -1;
+
+      // Orden descendente para los jugadores con rating
+      return ratingB - ratingA;
+  });
+}
+
+function mostrarRanking(jugadores) {
+  const rankingContainer = document.getElementById("ranking-list");
+  rankingContainer.innerHTML = ""; // Limpiar contenido previo
+
+  const jugadoresOrdenados = ordenarPorRating(jugadores);
+  jugadoresOrdenados.forEach((jugador, index) => {
+      const li = document.createElement("li");
+      li.className = "ranking-card";
+      if (index === 0 && jugador["Rating"] >= 70) li.classList.add("top-1"); // Resaltar al mejor jugador
+
+      const rating = jugador["Rating"] && parseFloat(jugador["Rating"]) >= 70
+          ? `${jugador["Rating"]} (${calcularEstrellas(jugador["Rating"])})`
+          : "N/A";
+
+      li.innerHTML = `
+          <img src="${jugador["Carpeta"] || "imagenes/default.jpg"}" alt="${jugador["Nombre"]}">
+          <div>
+              <strong>${jugador["Nombre"]} ${jugador["Apellido Paterno"]}</strong><br>
+              Rating: ${rating}
+          </div>
+      `;
+      rankingContainer.appendChild(li);
+  });
+}
 
 
 
@@ -154,11 +284,15 @@ document.getElementById("cerrar-sesion").addEventListener("click", function () {
 
 
 
-
-
-
 // Combinar todos los filtros
 function filtrarJugadores() {
+  const equipoActual = localStorage.getItem("usuarioActual"); // Identificar el equipo actual
+  const claveFavoritos = `favoritos_${equipoActual}`; // Clave específica para favoritos
+  const claveEnProceso = `enProceso_${equipoActual}`; // Clave específica para "En Proceso"
+  
+  const favoritos = JSON.parse(localStorage.getItem(claveFavoritos)) || []; // Obtener favoritos
+  const enProceso = JSON.parse(localStorage.getItem(claveEnProceso)) || []; // Obtener "En Proceso"
+
   const jugadoresFiltrados = jugadores.filter(jugador => {
     const posicionOfensivaJugador = jugador["Posición Ofensiva"] || "Ninguna";
     const posicionDefensivaJugador = jugador["Posición Defensiva"] || "Ninguna";
@@ -186,14 +320,22 @@ function filtrarJugadores() {
       (filtroRating === "3" && ratingJugador >= 70 && ratingJugador <= 89) ||
       (filtroRating === "4" && ratingJugador >= 90 && ratingJugador <= 97) ||
       (filtroRating === "5" && ratingJugador >= 98 && ratingJugador <= 110);
+    
+    // Nuevo filtro para favoritos
+    const cumpleFavoritos =
+      filtroFavoritos === "todos" || // Mostrar todos
+      (filtroFavoritos === "favoritos" && favoritos.includes(`${jugador["Nombre"]}_${jugador["Apellido Paterno"]}`));
 
-    return cumpleOfensiva && cumpleDefensiva && cumpleClase && cumpleEstado && cumpleAltura && cumplePeso && cumpleRating;
+      const cumpleEnProceso =
+      filtroEnProceso === "todos" || // Mostrar todos
+      (filtroEnProceso === "enProceso" && enProceso.includes(`${jugador["Nombre"]}_${jugador["Apellido Paterno"]}`));
+
+
+    return cumpleOfensiva && cumpleDefensiva && cumpleClase && cumpleEstado && cumpleAltura && cumplePeso && cumpleRating && cumpleFavoritos && cumpleEnProceso;
   });
 
   mostrarResultados(jugadoresFiltrados);
 }
-
-
 
 
 
@@ -207,12 +349,6 @@ if (usuarioActual) {
   // Redirigir al login si no hay un usuario registrado
   window.location.href = "login.html";
 }
-
-
-
-
-
-
 
 
 // Mostrar resultados en la interfaz
@@ -229,6 +365,11 @@ function mostrarResultados(lista) {
     resultados.innerHTML = "<li>No se encontraron jugadores.</li>";
     return;
   }
+
+  // Obtener favoritos actuales
+  const equipoActual = localStorage.getItem("usuarioActual");
+  const claveFavoritos = `favoritos_${equipoActual}`;
+  const favoritos = JSON.parse(localStorage.getItem(claveFavoritos)) || [];
 
   listaPaginada.forEach(jugador => {
     const li = document.createElement("li");
@@ -264,15 +405,34 @@ function mostrarResultados(lista) {
       Clase: ${jugador["Clase (Año de graduación)"] || "N/A"}<br>
       Rating: ${jugador["Rating"] || "N/A"} (${calcularEstrellas(jugador["Rating"])})
     `;
-
-
     // Insertar el enlace del nombre al principio
     info.querySelector("strong").appendChild(nombreLink);
-
     li.appendChild(info);
+
+    // Crear botón de favoritos
+    const botonFavorito = document.createElement("button");
+    botonFavorito.className = "favorito-btn";
+    botonFavorito.setAttribute("data-nombre", jugador["Nombre"]);
+    botonFavorito.setAttribute("data-apellido", jugador["Apellido Paterno"]);
+    botonFavorito.onclick = () => toggleFavorito(jugador["Nombre"], jugador["Apellido Paterno"]);
+    li.appendChild(botonFavorito);
+
+    // Crear botón de "En proceso"
+    const botonProceso = document.createElement("button");
+    botonProceso.className = "proceso-btn";
+    botonProceso.setAttribute("data-nombre", jugador["Nombre"]);
+    botonProceso.setAttribute("data-apellido", jugador["Apellido Paterno"]);
+    botonProceso.onclick = () => toggleProceso(jugador["Nombre"], jugador["Apellido Paterno"]);
+    li.appendChild(botonProceso);
+
     resultados.appendChild(li);
+
+    // Actualizar los estados de los botones después de agregarlos al DOM
+    actualizarBotonFavorito(jugador["Nombre"], jugador["Apellido Paterno"]);
+    actualizarBotonProceso(jugador["Nombre"], jugador["Apellido Paterno"]);
   });
 
+  // Actualizar la paginación
   actualizarPaginacion(lista.length);
 }
 
@@ -314,14 +474,6 @@ function actualizarPaginacion(totalJugadores) {
   btnSiguiente.onclick = () => cambiarPagina(paginaActual + 1, totalJugadores);
   paginacion.appendChild(btnSiguiente);
 }
-
-
-
-
-
-
-
-
 
 
 

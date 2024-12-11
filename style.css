@@ -15,6 +15,148 @@ h1, h2 {
     margin: 20px 0;
 }
 
+button.favorito-btn,
+button.proceso-btn {
+    padding: 10px;
+    width: 100px; /* Ancho fijo para evitar cambios bruscos */
+    font-size: 14px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+button.favorito-btn.activo,
+button.proceso-btn.activo {
+    background-color: #0056b3; /* Color activo */
+}
+
+button.favorito-btn:hover,
+button.proceso-btn:hover {
+    background-color: #0056b3; /* Hover */
+}
+
+
+
+#favoritos-container {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f4f4f9; /* Fondo claro */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+#favoritos-container h2 {
+  font-size: 18px;
+  color: #004992; /* Azul */
+  margin-bottom: 10px;
+}
+
+#favoritos-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#favoritos-list .jugador-card {
+  padding: 10px;
+  background-color: #fff; /* Blanco */
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.botones-container {
+  display: flex;
+  flex-direction: column; /* Coloca los botones en columna */
+  align-items: flex-end; /* Alinea a la derecha */
+  gap: 5px; /* Espaciado entre botones */
+}
+
+
+
+#contacto {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Espacio entre elementos del contacto */
+}
+
+#notas {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa; /* Fondo suave */
+  border-radius: 8px; /* Bordes redondeados */
+  border: 1px solid #ddd; /* Borde gris claro */
+}
+
+#nota-texto {
+  width: 100%;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  resize: none;
+  padding: 10px;
+}
+
+#guardar-nota,
+#eliminar-nota {
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+#guardar-nota {
+  background-color: #007bff;
+  color: white;
+  margin-right: 5px;
+}
+
+#guardar-nota:hover {
+  background-color: #0056b3; /* Color más oscuro al pasar el mouse */
+}
+
+#eliminar-nota {
+  background-color: #dc3545;
+  color: white;
+}
+
+#eliminar-nota:hover {
+  background-color: #a71d2a; /* Color más oscuro al pasar el mouse */
+}
+
+
+/* Estilo para el select */
+#favoritosFiltro {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff; /* Fondo blanco */
+  color: #004992; /* Texto azul */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  width: 200px; /* Ancho uniforme para los filtros */
+  transition: all 0.3s ease;
+}
+
+/* Hover y foco en el select */
+#favoritosFiltro:hover {
+  border-color: #004992; /* Azul más oscuro */
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+#favoritosFiltro:focus {
+  outline: none;
+  border-color: #004992; /* Azul más oscuro */
+  box-shadow: 0 0 6px rgba(0, 73, 146, 0.5);
+}
+
+
+
+
 #resultados-titulo {
     color: #004992; /* Azul */
     font-weight: bold; /* Opcional: hace que el texto sea más visible */
@@ -56,16 +198,16 @@ ul {
 
 /* Tarjeta de jugador */
 .jugador-card {
-    display: flex;
-    align-items: center;
-    padding: 20px;
-    background: #f4f4f9; /* Fondo gris claro para las tarjetas */
-    color: #004992; /* Texto azul */
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  justify-content: space-between; /* Espacio entre contenido e información */
+  align-items: center; /* Alinea verticalmente */
+  padding: 20px;
+  background: #f4f4f9;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .jugador-card:hover {

@@ -3,7 +3,9 @@
 const USUARIOS = [
     { username: "admin", password: "12345" },
     { username: "TEXEM", password: "SVG" },
-    { username: "user2", password: "password2" }
+    { username: "UANL", password: "TIGRES" },
+    { username: "UNAM", password: "PUMAS" },
+    { username: "MTY", password: "MTY" }
   ];
   
 function iniciarSesion() {

@@ -29,6 +29,96 @@ function procesarTSV(data) {
 
 
 
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  const nombre = params.get("nombre");
+  const apellido = params.get("apellido");
+  const username = localStorage.getItem("usuarioActual"); // Obtener el nombre de usuario actual
+
+  if (!nombre || !apellido || !username) {
+      console.error("Faltan parámetros en la URL o el usuario no ha iniciado sesión.");
+      return;
+  }
+
+  // Generar una clave única para cada jugador y usuario
+  const notaKey = `${username}_${nombre}_${apellido}`;
+
+  // Cargar la nota al cargar la página
+  cargarNota(notaKey);
+
+  // Añadir eventos a los botones
+  const botonGuardar = document.getElementById("guardar-nota");
+  const botonEliminar = document.getElementById("eliminar-nota");
+
+  if (botonGuardar) {
+      botonGuardar.addEventListener("click", () => guardarNota(notaKey));
+  }
+
+  if (botonEliminar) {
+      botonEliminar.addEventListener("click", () => eliminarNota(notaKey));
+  }
+});
+
+// Función para cargar la nota desde localStorage
+function cargarNota(notaKey) {
+  const textarea = document.getElementById("nota-texto");
+  const notaGuardada = localStorage.getItem(notaKey);
+
+  if (notaGuardada) {
+      textarea.value = notaGuardada; // Mostrar la nota guardada
+  } else {
+      textarea.value = ""; // Limpiar el textarea si no hay nota
+  }
+}
+
+// Función para guardar la nota en localStorage
+function guardarNota(notaKey) {
+  const textarea = document.getElementById("nota-texto");
+  const notaTexto = textarea.value;
+
+  if (notaTexto.trim() === "") {
+      alert("La nota está vacía. Escribe algo para guardar.");
+      return;
+  }
+
+  localStorage.setItem(notaKey, notaTexto); // Guardar en localStorage
+  mostrarMensaje("¡Nota guardada exitosamente!", "success");
+}
+
+// Función para eliminar la nota de localStorage
+function eliminarNota(notaKey) {
+  const textarea = document.getElementById("nota-texto");
+
+  localStorage.removeItem(notaKey); // Eliminar de localStorage
+  textarea.value = ""; // Limpiar el textarea
+  mostrarMensaje("Nota eliminada.", "error");
+}
+
+// Función para mostrar mensajes temporales
+function mostrarMensaje(mensaje, tipo) {
+  const mensajeElemento = document.getElementById("nota-guardada");
+  mensajeElemento.textContent = mensaje;
+
+  if (tipo === "success") {
+      mensajeElemento.style.color = "green"; // Mensaje en verde
+  } else if (tipo === "error") {
+      mensajeElemento.style.color = "red"; // Mensaje en rojo
+  }
+
+  mensajeElemento.style.display = "block";
+
+  setTimeout(() => {
+      mensajeElemento.style.display = "none";
+  }, 2000); // Ocultar mensaje después de 2 segundos
+}
+
+
+
+
+
 // Función para calcular las estrellas según el rating
 function calcularEstrellas(rating) {
   if (rating >= 70 && rating <= 89) return "★★★";
@@ -43,6 +133,7 @@ function cargarPerfilJugador() {
     const params = new URLSearchParams(window.location.search);
     const nombre = params.get("nombre");
     const apellido = params.get("apellido");
+
   
     // Buscar al jugador en la lista
     const jugador = jugadores.find(jugador =>
@@ -61,6 +152,7 @@ function cargarPerfilJugador() {
     document.getElementById("altura").textContent = jugador["Altura en mts"] || "N/A";
     document.getElementById("peso").textContent = jugador["Peso en Kgs"] || "N/A";
     document.getElementById("clase").textContent = jugador["Clase (Año de graduación)"] || "N/A";
+    document.getElementById("Fecha de Nacimiento").textContent = jugador["Fecha de Nacimiento"] || "N/A";
     document.getElementById("promedio").textContent = jugador["Promedio Académico"] || "N/A";
     document.getElementById("club").textContent = jugador["Nombre del equipo actual"] || "N/A";
     document.getElementById("estado").textContent = jugador["Estado"] || "N/A";

@@ -25,6 +25,8 @@
     <button id="cerrar-sesion">Cerrar Sesión</button>
   </header>
 
+  
+ 
   <!-- Filtros -->
   <section id="filtros">
     <div class="filtro-item">
@@ -131,6 +133,23 @@
       <label for="pesoMaxFiltro">Peso máximo:</label>
       <input type="number" id="pesoMaxFiltro" oninput="filtrarPorPeso()" placeholder="Ej: 130">
     </div>
+    <div class="filtro-item">
+      <label for="favoritosFiltro">Favoritos:</label>
+      <select id="favoritosFiltro" onchange="filtrarPorFavoritos()">
+        <option value="todos">Todos</option>
+        <option value="favoritos">Solo Favoritos</option>
+      </select>
+    </div>
+
+    <!-- <div class="filtro-item">
+      <label for="enProcesoFiltro">En Proceso:</label>
+      <select id="enProcesoFiltro" onchange="filtrarPorEnProceso()">
+        <option value="todos">Todos</option>
+        <option value="enProceso">Solo En Proceso</option>
+      </select>
+    </div> -->
+
+    
     <div class="filtro-item">
       <label for="alturaMinFiltro">Altura mínima:</label>
       <input type="number" id="alturaMinFiltro" oninput="filtrarPorAltura()" placeholder="Ej: 1.70">
