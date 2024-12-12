@@ -56,7 +56,7 @@ let filtroPesoMin = null;
 let filtroPesoMax = null;
 let filtroRating = "";
 let filtroFavoritos = "todos"; // Estado inicial
-let filtroEnProceso = "todos"; // Opciones: "todos", "enProceso"
+let filtroEnProceso = "todos";
 let paginaActual = 1; // Página inicial
 const jugadoresPorPagina = 10; // Número de jugadores por página
 const cumpleClase =
@@ -134,7 +134,6 @@ function filtrarPorEnProceso() {
 
 
 
-
 function cerrarSesion() {
   // Eliminar datos básicos de sesión almacenados en localStorage
   localStorage.removeItem("usuario");
@@ -182,8 +181,6 @@ function actualizarBotonFavorito(nombre, apellido) {
   }
 }
 
-
-
 function actualizarBotonProceso(nombre, apellido) {
   const equipoActual = localStorage.getItem("usuarioActual");
   const claveProceso = `proceso_${equipoActual}`;
@@ -193,11 +190,13 @@ function actualizarBotonProceso(nombre, apellido) {
 
   const boton = document.querySelector(`button.proceso-btn[data-nombre="${nombre}"][data-apellido="${apellido}"]`);
   if (boton) {
-      boton.textContent = esEnProceso ? "Quitar de En proceso" : "Agregar a En proceso";
-      boton.classList.toggle("activo", esEnProceso);
-      boton.style.width = "100px"; // Ajusta el ancho del botón al cargar
+    boton.textContent = esEnProceso ? "Quitar de En Proceso" : "Agregar a En Proceso";
+    boton.classList.toggle("activo", esEnProceso);
   }
 }
+
+
+
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -211,7 +210,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
-let enProceso = JSON.parse(localStorage.getItem("enProceso")) || [];
+const equipoActual = localStorage.getItem("usuarioActual");
+const claveProceso = `proceso_${equipoActual}`;
+const enProceso = JSON.parse(localStorage.getItem(claveProceso)) || [];
+
 
 // Función para alternar "En proceso"
 function toggleProceso(nombre, apellido) {
@@ -220,17 +222,15 @@ function toggleProceso(nombre, apellido) {
   let enProceso = JSON.parse(localStorage.getItem(claveProceso)) || [];
   const idJugador = `${nombre}_${apellido}`;
 
-  const indice = enProceso.indexOf(idJugador);
-  if (indice === -1) {
-      enProceso.push(idJugador);
+  if (enProceso.includes(idJugador)) {
+    enProceso = enProceso.filter(jugador => jugador !== idJugador);
   } else {
-      enProceso.splice(indice, 1);
+    enProceso.push(idJugador);
   }
+
   localStorage.setItem(claveProceso, JSON.stringify(enProceso));
   actualizarBotonProceso(nombre, apellido);
 }
-
-
 
 
 
@@ -275,14 +275,11 @@ function mostrarRanking(jugadores) {
 }
 
 
-
 document.getElementById("cerrar-sesion").addEventListener("click", function () {
   console.log("Botón de cerrar sesión clicado."); // Para depuración
   localStorage.removeItem("usuario");
   window.location.href = "login.html"; // Asegúrate de que login.html existe
 });
-
-
 
 // Combinar todos los filtros
 function filtrarJugadores() {
@@ -326,10 +323,11 @@ function filtrarJugadores() {
       filtroFavoritos === "todos" || // Mostrar todos
       (filtroFavoritos === "favoritos" && favoritos.includes(`${jugador["Nombre"]}_${jugador["Apellido Paterno"]}`));
 
-    const cumpleEnProceso =
-      filtroEnProceso === "todos" || // Mostrar todos
+      const cumpleEnProceso =
+      filtroEnProceso === "todos" || // Mostrar todos los jugadores
       (filtroEnProceso === "enProceso" && enProceso.includes(`${jugador["Nombre"]}_${jugador["Apellido Paterno"]}`));
-
+    
+    
 
     return cumpleOfensiva && cumpleDefensiva && cumpleClase && cumpleEstado && cumpleAltura && cumplePeso && cumpleRating && cumpleFavoritos && cumpleEnProceso;
   });
@@ -409,7 +407,7 @@ function mostrarResultados(lista) {
     info.querySelector("strong").appendChild(nombreLink);
     li.appendChild(info);
 
-    // Crear botón de favoritos
+    // Botón de favoritos
     const botonFavorito = document.createElement("button");
     botonFavorito.className = "favorito-btn";
     botonFavorito.setAttribute("data-nombre", jugador["Nombre"]);
@@ -417,7 +415,7 @@ function mostrarResultados(lista) {
     botonFavorito.onclick = () => toggleFavorito(jugador["Nombre"], jugador["Apellido Paterno"]);
     li.appendChild(botonFavorito);
 
-    // Crear botón de "En proceso"
+    // Botón de "En Proceso"
     const botonProceso = document.createElement("button");
     botonProceso.className = "proceso-btn";
     botonProceso.setAttribute("data-nombre", jugador["Nombre"]);
