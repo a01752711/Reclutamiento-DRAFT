@@ -190,7 +190,7 @@ function actualizarBotonProceso(nombre, apellido) {
 
   const boton = document.querySelector(`button.proceso-btn[data-nombre="${nombre}"][data-apellido="${apellido}"]`);
   if (boton) {
-    boton.textContent = esEnProceso ? "Quitar de En Proceso" : "Agregar a En Proceso";
+    boton.textContent = esEnProceso ? "En proceso de admisión" : "No esta en admisión";
     boton.classList.toggle("activo", esEnProceso);
   }
 }
